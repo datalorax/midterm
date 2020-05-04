@@ -57,7 +57,7 @@ td <- data %>%
   pivot_longer(contains("number_level"), 
   names_to = "level", 
   values_to = "n") %>%  
-  mutate(level = str_extract(level, "[0-9]")) %>% 
+  mutate(level = str_extract(level, "[0-9]")) %>% # could also use "\\d" to mean "digit". You could also do this in your pivot_longer call
   select(academic_year, district, school, student_group, grade_level, level, n) %>% 
   filter(student_group == "Hispanic/Latino" |
            student_group == "White") %>% 
@@ -98,6 +98,13 @@ td2 <- left_join(students, unique_school) %>%
 
 td2
 
+# This is an interesting approach. I just used `group_by` twice, as follows
+# d <- d %>%
+#   group_by(district) %>% 
+#   mutate(n_schools = length(unique(school))) %>% 
+# 	group_by(academic_year, district, student_group, level, n_schools) %>%
+# 	summarize(n = sum(n)) %>%
+#   ... #etc.
 ```
 
 ## Part B: Acheivement Gaps 
@@ -157,10 +164,8 @@ pd %>% filter(district == "Bandon SD 54") %>%
 
 #create column that is the caption we want: 
 pd2 <- pd %>%
-    mutate(label = 
-    glue("Note. District included {(n_schools)} schools."),
-    title = 
-    glue("Achievment Gap Estimates: {(district)}"))
+    mutate(label = glue("Note. District included {(n_schools)} schools."),
+           title = glue("Achievment Gap Estimates: {(district)}"))
 
 #create multiple plot
 pd2 <- pd2 %>%
